@@ -40,6 +40,7 @@ function deny_access_node_access(NodeInterface $node, $op, AccountInterface $acc
  * Implements hook_form_FORM_ID_alter() for user_admin_permissions.
  */
 function deny_access_form_user_admin_permissions_alter(&$form, &$form_state, $form_id) {
-  $form['permission']['bypass node access']['#description'] .= '<br /><em class="permission-warning">' . t("This permission overrides the 'DENY' permissions of the !Deny_Access module.", array('!Deny_Access' => l('Deny Access', current_path(), array('fragment' => 'module-deny_access')))) . '</em>';
+  $current_path = \Drupal::service('path.current')->getPath();
+  $form['permission']['bypass node access']['#description'] .= '<br /><em class="permission-warning">' . t("This permission overrides the 'DENY' permissions of the !Deny_Access module.", array('!Deny_Access' => \Drupal::l('Deny Access', $current_path, array('fragment' => 'module-deny_access')))) . '</em>';
 }
 
