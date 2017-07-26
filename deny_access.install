@@ -6,6 +6,8 @@
  *
  */
 
+use Drupal\deny_access\DenyAcessPermissions;
+
 /**
  * Implements hook_install().
  */
@@ -22,9 +24,10 @@ function deny_access_schema() {
  * Implements hook_enable().
  */
 function deny_access_enable() {
-  if ($rid = variable_get('user_admin_role', 0)) {
+  $perm = new DenyAcessPermissions();
+  if ($rid = \Drupal::state()->get('user_admin_role', 0)) {
     // Don't assign the denies to the administrator role.
-    user_role_revoke_permissions($rid, array_keys(deny_access_permission()));
+    user_role_revoke_permissions($rid, array_keys($perm->permissions()));
   }
 }
 
