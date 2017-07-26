@@ -1,0 +1,11 @@
+name = Deny Access
+description = Overrides create/view/edit/delete content access granted by other modules.
+dependencies[] = node
+package = Access control
+core = 7.x
+
+
+files[] = deny_access.install
+files[] = deny_access.module
+;configure = admin/content/deny
+
