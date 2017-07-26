@@ -5,8 +5,11 @@ DENY creating content:
   title: 'DENY creating any content'
   description: 'Override content create access granted by other modules.'
 DENY editing content:
-  title: 'DENY editing any content'
+  title: 'DENY editing any content'),
   description: 'Override content edit access granted by other modules.'
 DENY deleting content:
-  title: 'DENY deleting any content'
+  title: 'DENY deleting any content'),
   description: 'Override content delete access granted by other modules.'
+
+permission_callbacks:
+  - Drupal\deny_access\DenyAcessPermisions::permissions
