@@ -9,68 +9,30 @@
  *
  */
 
-/**
- * Implements hook_permission().
- */
-function deny_access_permission() {
-  $perms = array(
-    'DENY accessing content' => array(
-      'title' => t('DENY accessing any content'),
-      'description' => t('Override content access granted by other modules.'),
-    ),
-    'DENY creating content' => array(
-      'title' => t('DENY creating any content'),
-      'description' => t('Override content create access granted by other modules.'),
-    ),
-    'DENY editing content' => array(
-      'title' => t('DENY editing any content'),
-      'description' => t('Override content edit access granted by other modules.'),
-    ),
-    'DENY deleting content' => array(
-      'title' => t('DENY deleting any content'),
-      'description' => t('Override content delete access granted by other modules.'),
-    ),
-  );
-
-  foreach (node_permissions_get_configured_types() as $type) {
-    $info = node_type_get_type($type);
-    $perms += array(
-      "DENY accessing $type content" => array(
-        'title' => t('%type_name: DENY access', array('%type_name' => $info->name)),
-        'description' => t('Override content access granted by other modules for this content type.'),
-    ));
-  }
-
-  return $perms;
-}
+use Drupal\node\NodeInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Implements hook_node_access().
  */
-function deny_access_node_access($node, $op, $account) {
-  $type = (is_string($node) ? $node : $node->type);
-  if (user_access("DENY accessing $type content", $account) && !user_access('bypass node access', $account)) {
-    return NODE_ACCESS_DENY;
+function deny_access_node_access(NodeInterface $node, $op, AccountInterface $account) {
+  $type = (is_string($node) ? $node : $node->getType());
+  if ($account->hasPermission("DENY accessing $type content") && !$account->hasPermission('bypass node access')) {
+    return 'deny';
   }
 
   switch ($op) {
     case 'create':
-      $perm = 'DENY creating content';
-      break;
+      return $permission = AccessResult::allowedIfHasPermission($account, 'DENY creating content');
     case 'view':
-      $perm = 'DENY accessing content';
-      break;
+      return $permission = AccessResult::allowedIfHasPermission($account, 'DENY accessing content');
     case 'update':
-      $perm = 'DENY editing content';
-      break;
+      return $permission = AccessResult::allowedIfHasPermission($account, 'DENY editing content');
     case 'delete':
-      $perm = 'DENY deleting content';
-      break;
+      return $permission = AccessResult::allowedIfHasPermission($account, 'DENY deleting content');
     default:
-      return;
-  }
-  if (user_access($perm, $account)) {
-    return NODE_ACCESS_DENY;
+      return $permission = AccessResult::neutral();
   }
 }
 
